@@ -300,7 +300,6 @@ button.item:hover .art .pic img{transform:scale(1.06)}
 .rnd button:hover{color:var(--bad)}
 .opt{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
 .opt span{font-size:11px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
-.arena{display:grid;gap:10px;grid-template-columns:repeat(var(--np,2),minmax(0,1fr))}
 .pl{padding:10px;min-width:0;transition:border-color .3s,box-shadow .3s}
 .pl.winner{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 36px -8px var(--gold)}
 .pl.loser{opacity:.55}
@@ -325,6 +324,31 @@ button.item:hover .art .pic img{transform:scale(1.06)}
 .bt-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
 .bt-result{padding:18px;text-align:center}
 .bt-result h3{font-size:22px}
+
+
+/* Bitwy v2 */
+.plseg button{display:inline-flex;align-items:center;gap:2px;padding:0 10px}
+.plseg svg{width:16px;height:16px}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.modes button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:8px 10px;border:1px solid var(--line-2);border-radius:8px;background:var(--bg-2);min-width:0}
+.modes button b{font-family:var(--f-display);font-size:13px;letter-spacing:.04em;text-transform:uppercase}
+.modes button span{font-size:11px;color:var(--muted);line-height:1.3}
+.modes button:hover{border-color:var(--muted)}
+.modes button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.modes button[aria-pressed="true"] b{color:var(--accent)}
+.rnd .jk{width:22px;height:22px;border-radius:5px;border:1px solid var(--line-2);background:var(--bg);color:var(--muted);font-family:var(--f-display);font-weight:800;font-size:11px;padding:0;margin-left:2px}
+.rnd .jk[aria-pressed="true"]{background:var(--gold);color:#1a1000;border-color:var(--gold)}
+.jbadge{display:inline-block;font-family:var(--f-display);font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:4px;background:var(--gold);color:#1a1000;vertical-align:middle;margin-left:6px}
+.arena-wrap{position:relative}
+.arena{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;scroll-snap-type:x proximity}
+.arena .pl{flex:1 0 0;min-width:150px;scroll-snap-align:start}
+.cdown{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(6,10,8,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);border-radius:var(--r)}
+.cdown>div{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cdown b{font-family:var(--f-display);font-size:96px;line-height:1;font-weight:800;color:var(--accent);text-shadow:0 0 40px var(--accent);animation:cdPop 1s ease-out infinite}
+.cdown span{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+@keyframes cdPop{0%{transform:scale(1.35);opacity:0}15%{transform:scale(1);opacity:1}100%{transform:scale(.92);opacity:.85}}
+.cdown b.go{color:#fff;font-size:64px;animation:none}
+@media (max-width:640px){.modes{grid-template-columns:1fr}.arena .pl{min-width:46vw}.cdown b{font-size:72px}}
 
 /* Coinflip */
 .cf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
@@ -449,7 +473,6 @@ body.imgs-blocked .note{display:block}
   .tk{width:160px}
   .open-actions .btn-primary{flex:1 1 100%}
   .wheel-box{grid-template-columns:1fr;justify-items:center}
-  .arena{grid-template-columns:repeat(2,minmax(0,1fr))}
   .coin3{width:130px;height:130px}.coin3 .face{font-size:48px}
   .windlg{padding:16px 12px 14px}
   .win-items{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -511,6 +534,7 @@ body.imgs-blocked .note{display:block}
           <div class="seg" id="cntSeg" aria-label="Liczba skrzyń"><button type="button" data-n="1" aria-pressed="true">1</button><button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button><button type="button" data-n="5">5</button></div>
           <button class="btn btn-primary" id="openBtn" type="button"><span id="openLbl">Otwórz za</span><span class="num" id="openPrice"></span></button>
           <label class="switch" for="fastChk"><input type="checkbox" id="fastChk"><span>Szybkie otwieranie</span></label>
+          <label class="switch" for="jokerChk" title="Każdy skin ze skrzynki ma równą szansę. Cena rośnie do wartości oczekiwanej."><input type="checkbox" id="jokerChk"><span>Joker: równe szanse</span></label>
           <p class="need" id="needMore" hidden>Brakuje <b class="num" id="needAmt"></b>. <button class="btn-link" id="goEarn" type="button">Zdobądź pieniądze</button></p>
         </div>
         <div class="eyebrow">Zawartość i szanse</div>
@@ -546,20 +570,20 @@ body.imgs-blocked .note{display:block}
 
     <section id="tab-bt" role="tabpanel" hidden>
       <div id="btSetup">
-        <div class="sec-head"><div><div class="eyebrow">Case battle</div><h1 class="disp">Bitwy skrzynek</h1><p class="lead">Ty i przeciwnicy otwieracie te same skrzynki. Kto zbierze dropy o największej łącznej wartości, zgarnia wszystko. W trybie „Szalony” wygrywa najniższa wartość.</p></div></div>
+        <div class="sec-head"><div><div class="eyebrow">Case battle</div><h1 class="disp">Bitwy skrzynek</h1><p class="lead">Ty i przeciwnicy otwieracie te same skrzynki. Wybierz skrzynki, liczbę graczy i tryb. Każdą rundę możesz zamienić w Jokera: wszystkie skiny mają wtedy równą szansę, a cena rośnie.</p></div></div>
         <div class="bt-setup">
-          <div class="panel glass"><div class="panel-h"><h3>Wybierz skrzynki</h3><span class="badge" id="btRoundsN">0 / 10 rund</span></div><div class="toolbar"><input type="search" id="btSearch" placeholder="Szukaj skrzynki…" aria-label="Szukaj skrzynki"></div><div class="bt-cases" id="btCases"></div></div>
+          <div class="panel glass"><div class="panel-h"><h3>Wybierz skrzynki</h3><span class="badge" id="btRoundsN">0 / 10 rund</span></div><div class="toolbar"><input type="search" id="btSearch" placeholder="Szukaj skrzynki…" aria-label="Szukaj skrzynki"><label class="switch" for="btJokerAdd"><input type="checkbox" id="btJokerAdd"><span>Dodawaj jako Joker</span></label></div><div class="bt-cases" id="btCases"></div></div>
           <div class="panel glass"><h3 style="font-family:var(--f-display);font-size:16px;margin-bottom:8px">Ustawienia bitwy</h3>
-            <div class="opt"><span>Rundy</span><div class="bt-rounds" id="btRounds"></div></div>
-            <div class="opt"><span>Gracze</span><div class="seg" id="btPl"><button type="button" data-n="2" aria-pressed="true">1v1</button><button type="button" data-n="3">1v1v1</button><button type="button" data-n="4">1v1v1v1</button></div></div>
-            <div class="opt"><span>Tryb</span><div class="seg" id="btMode"><button type="button" data-m="n" aria-pressed="true">Normalny</button><button type="button" data-m="c">Szalony</button></div></div>
-            <div class="up-row" style="margin:4px 0 14px"><div class="kv"><span>Koszt bitwy</span><b id="btCost">0,00 $</b></div></div>
+            <div class="opt"><span>Rundy <em style="font-style:normal;color:var(--dim)">(kliknij „J”, żeby włączyć Jokera)</em></span><div class="bt-rounds" id="btRounds"></div></div>
+            <div class="opt"><span>Gracze</span><div class="seg plseg" id="btPl"><button type="button" data-n="2" aria-pressed="true" aria-label="2 graczy"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></button><button type="button" data-n="3" aria-label="3 graczy"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></button><button type="button" data-n="4" aria-label="4 graczy"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0z"/></svg></button></div></div>
+            <div class="opt"><span>Tryb</span><div class="modes" id="btMode"><button type="button" data-m="n" aria-pressed="true"><b>Normalny</b><span>Najwyższa wartość dropów bierze wszystko</span></button><button type="button" data-m="u"><b>Underdog</b><span>Wygrywa gracz z najniższą wartością dropów</span></button><button type="button" data-m="s"><b>Shared</b><span>Wartość wszystkich dropów dzieli się równo między graczy</span></button></div></div>
+            <div class="up-row" style="margin:4px 0 14px"><div class="kv"><span>Koszt bitwy</span><b id="btCost">0,00 $</b></div><div class="kv"><span>Jokerów</span><b id="btJokerN">0</b></div></div>
             <button class="btn btn-primary" id="btStart" type="button" disabled>Rozpocznij bitwę</button></div>
         </div>
       </div>
       <div id="btArena" hidden>
-        <div class="bt-bar"><div><div class="eyebrow" id="btRoundLbl">Runda 1 / 1</div><h2 class="disp" id="btCaseLbl">Skrzynka</h2></div><div class="kv"><span>Pula</span><b id="btPot">0,00 $</b></div></div>
-        <div class="arena" id="arena"></div>
+        <div class="bt-bar"><div><div class="eyebrow" id="btRoundLbl">Runda 1 / 1</div><h2 class="disp" id="btCaseLbl">Skrzynka</h2></div><div class="up-row"><div class="kv"><span>Tryb</span><b id="btModeLbl" style="font-family:var(--f-ui);font-size:14px">Normalny</b></div><div class="kv"><span>Pula</span><b id="btPot">0,00 $</b></div></div></div>
+        <div class="arena-wrap"><div class="arena" id="arena"></div><div class="cdown" id="cdown" hidden><div><b id="cdNum">5</b><span>bitwa zaczyna się za</span></div></div></div>
         <div class="bt-result glass" id="btResult" hidden style="margin-top:14px"><div class="eyebrow" id="btResEye">Koniec bitwy</div><h3 class="disp" id="btResTitle"></h3><p id="btResText" style="color:var(--muted);margin:6px 0 12px"></p><div class="win-btns"><button class="btn btn-primary" id="btAgain" type="button">Ta sama bitwa</button><button class="btn btn-ghost" id="btBack" type="button">Nowa bitwa</button></div></div>
       </div>
     </section>
@@ -650,7 +674,7 @@ const maxVal=c=>Math.max(...c.all.map(s=>skinValue(s,0,c.st&&s.st)));
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 function rollItem(c){let x=Math.random();for(const it of c.items){x-=it.p;if(x<0)return it.s}return c.items[c.items.length-1].s}
 function rollFloat(s){let x=Math.random(),t=0;for(;t<4;t++){x-=WEAR_P[t];if(x<0)break}const lo=t?WEAR[t-1].max:0,hi=WEAR[t].max,raw=lo+Math.random()*(hi-lo);return clamp(s.minF+raw*(s.maxF-s.minF),s.minF,Math.max(s.minF,s.maxF-1e-6))}
-function dropFrom(c){const s=rollItem(c);return{u:uid(),s:s.i,f:Math.round(rollFloat(s)*1e5)/1e5,st:c.st?s.st:(s.st&&Math.random()<.1),t:Date.now(),c:c.id}}
+function dropFrom(c){const s=rollItem(c);return{u:uid(),s:s.i,f:Math.round(rollFloat(s)*1e5)/1e5,st:c.st?s.st:(s.st&&Math.random()<.1),t:Date.now(),c:c.baseId||c.id}}
 function floatFor(s,tier){const lo=Math.max(s.minF,tier?WEAR[tier-1].max:0),hi=Math.min(s.maxF,WEAR[tier].max);if(hi<=lo)return clamp(lo,s.minF,s.maxF);return lo+Math.random()*(hi-lo)*.98}
 function wearTiersOf(s){return[0,1,2,3,4].filter(t=>(t?WEAR[t-1].max:0)<s.maxF&&WEAR[t].max>s.minF)}
 const CATN=['Pistolet','Pistolet maszynowy','Karabin','Broń ciężka','Nóż','Rękawice','Inne'];
@@ -741,6 +765,15 @@ function renderCrate(c){
   ctx.strokeStyle='rgba(255,255,255,.38)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(38,76);ctx.lineTo(170,76);ctx.lineTo(202,52);ctx.stroke();ctx.strokeStyle='rgba(0,0,0,.5)';ctx.beginPath();ctx.moveTo(170,76);ctx.lineTo(170,178);ctx.stroke();
   return cv.toDataURL('image/png')}
 
+
+/* ---------- Joker: równe szanse ---------- */
+const AVGW=WEAR.reduce((a,w,i)=>a+w.m*WEAR_P[i],0);
+const avgVal=(s,st)=>{const b=s.base*AVGW,m=stMult(s);return st?b*m:(s.st?b*(1+.1*(m-1)):b)};
+const niceP=p=>p<1?Math.round(p*20)/20:p<20?Math.round(p*2)/2:p<100?Math.round(p):Math.round(p/5)*5;
+const JOKER=new Map();
+function jokerOf(c){if(c.joker)return c;let j=JOKER.get(c.id);if(j)return j;const n=c.items.length;const items=c.items.map(x=>({s:x.s,p:1/n}));const ev=items.reduce((a,x)=>a+avgVal(x.s,c.st&&x.s.st),0)/n;
+  j=Object.assign({},c,{joker:true,baseId:c.id,id:c.id+'#j',name:c.name,items,price:Math.max(c.price,niceP(ev/c.ret))});JOKER.set(c.id,j);return j}
+
 /* ---------- Obrazki ---------- */
 let IMGOK=null;
 function pic(src,ph1,ph2,cls){const d=el('div','pic'+(cls?' '+cls:''));const ph=el('div','ph');ph.appendChild(el('b',null,ph1));if(ph2)ph.appendChild(el('span',null,ph2));
@@ -828,7 +861,7 @@ function spinTrack(track,wrap,vertical,dur){return new Promise(res=>{const card=
 const spinDur=i=>reduced()?600:(state.settings.fast?1500:5200)+i*350;
 
 /* ---------- Skrzynki ---------- */
-let current=null,openCount=1,caseFilter='all';
+let current=null,baseCase=null,openCount=1,caseFilter='all';
 function renderCaseGrid(){const q=($('#caseSearch').value||'').trim().toLowerCase(),sort=$('#caseSort').value;
   let list=CASES.filter(c=>c.name.toLowerCase().includes(q)||(c.tag||'').toLowerCase().includes(q));
   if(caseFilter!=='all')list=list.filter(c=>c.kind===caseFilter);
@@ -841,12 +874,12 @@ function renderCaseGrid(){const q=($('#caseSearch').value||'').trim().toLowerCas
   g.appendChild(fr);$('#caseEyebrow').textContent='Skrzynki · '+list.length+' z '+CASES.length}
 $('#caseSearch').addEventListener('input',renderCaseGrid);$('#caseSort').addEventListener('change',renderCaseGrid);
 $('#caseChips').addEventListener('click',e=>{const b=e.target.closest('.chipb');if(!b)return;caseFilter=b.dataset.f;$('#caseChips').querySelectorAll('.chipb').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));renderCaseGrid()});
-function selectCase(c){current=c;$('#caseList').hidden=true;$('#caseOpen').hidden=false;$('#ocName').textContent=c.name;$('#ocCode').textContent=c.type==='official'?'Oficjalna · '+c.year+' · '+c.items.length+' przedmiotów':c.tag+' · '+c.items.length+' przedmiotów'+(c.st?' · wszystko StatTrak™':'');
+function selectCase(c){baseCase=c;$('#jokerChk').checked=false;current=c;$('#caseList').hidden=true;$('#caseOpen').hidden=false;$('#ocName').textContent=c.name;$('#ocCode').textContent=c.type==='official'?'Oficjalna · '+c.year+' · '+c.items.length+' przedmiotów':c.tag+' · '+c.items.length+' przedmiotów'+(c.st?' · wszystko StatTrak™':'');
   $('#ocDesc').textContent=c.desc;$('#ocRet').textContent=Math.round(c.ret*100)+'%';$('#ocMax').textContent=money(maxVal(c));const p=$('#ocPic');p.innerHTML='';p.appendChild(casePic(c));buildReels();updateOpenBtn();renderContents(c);window.scrollTo({top:0})}
 function buildReels(){const box=$('#reels');box.innerHTML='';for(let i=0;i<openCount;i++){const w=el('div','reel-wrap');w.appendChild(el('div','marker'));const t=el('div','reel');w.appendChild(t);box.appendChild(w);buildTrack(t,current,null);placeStart(t,w,false)}}
 function updateOpenBtn(){if(!current)return;const total=current.price*openCount,short=total-state.balance;$('#openPrice').textContent=money(total);$('#needMore').hidden=short<=0||spinning;$('#needAmt').textContent=money(Math.max(0,short));
   $('#openBtn').disabled=spinning||short>0;$('#openLbl').textContent=spinning?'Losowanie…':'Otwórz za'}
-function setSpinUi(on){$('#backBtn').disabled=on;$('#fastChk').disabled=on;$('#cntSeg').querySelectorAll('button').forEach(b=>b.disabled=on);updateOpenBtn()}
+function setSpinUi(on){$('#backBtn').disabled=on;$('#fastChk').disabled=on;$('#jokerChk').disabled=on;$('#cntSeg').querySelectorAll('button').forEach(b=>b.disabled=on);updateOpenBtn()}
 function renderContents(c){const odds=$('#oddsRow');odds.innerHTML='';for(let k=4;k>=0;k--){const pr=c.items.filter(x=>x.s.r===k).reduce((a,x)=>a+x.p,0);if(pr<=0)continue;const d=el('div','odd');d.style.setProperty('--rc',RAR[k].c);d.appendChild(el('i'));d.appendChild(el('span',null,k===4&&c.rareName?c.rareName:RAR[k].n));d.appendChild(el('b',null,pct(pr)));odds.appendChild(d)}
   const wrap=$('#contents');wrap.innerHTML='';const grid=el('div','item-grid');c.items.slice().sort((a,b)=>b.s.r-a.s.r||skinValue(b.s,2,false)-skinValue(a.s,2,false)).forEach(x=>{const st=c.st&&x.s.st;const e=itemCard(x.s,1,st,false);e.querySelector('.sa').textContent=RAR[x.s.r].n;e.querySelector('.sb').textContent=pct(x.p);e.querySelector('.v').textContent=money(skinValue(x.s,4,st))+' – '+money(skinValue(x.s,0,st));grid.appendChild(e)});wrap.appendChild(grid)}
 $('#cntSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||spinning)return;openCount=+b.dataset.n;$('#cntSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));buildReels();updateOpenBtn()});
@@ -864,6 +897,7 @@ async function openCase(){const c=current;if(!c||spinning)return;const total=c.p
 $('#openBtn').addEventListener('click',openCase);
 $('#backBtn').addEventListener('click',()=>{if(spinning)return;current=null;$('#caseOpen').hidden=true;$('#caseList').hidden=false});
 $('#fastChk').addEventListener('change',e=>{state.settings.fast=e.target.checked;save()});
+$('#jokerChk').addEventListener('change',e=>{if(spinning||!baseCase){e.target.checked=!!(current&&current.joker);return}current=e.target.checked?jokerOf(baseCase):baseCase;$('#ocCode').textContent=(current.joker?'JOKER · równe szanse · ':'')+(baseCase.type==='official'?'Oficjalna · '+baseCase.year+' · ':baseCase.tag+' · ')+current.items.length+' przedmiotów';$('#ocMax').textContent=money(maxVal(current));buildReels();updateOpenBtn();renderContents(current)});
 $('#goEarn').addEventListener('click',()=>showTab('earn'));
 
 /* ---------- Okno wyniku ---------- */
@@ -985,40 +1019,49 @@ $('#tuBtn').addEventListener('click',async()=>{if(tu.busy||tu.sel.length!==10)re
 /* ---------- Bitwy ---------- */
 const BOTS=['kowal_99','Szybki_Bill','m4ciek','Zoska','pixelWilk','Bartas','headshot_Ola','Krecik','N0rbi','sniperka','Kuba_PL','tomekk','ZbyszekGG','Ania.exe','dzik77','Lolek','Grzmot','majster','RudaRura','Fifi'];
 const BOTC=['#fbbf24','#60a5fa','#d32ce6','#8847ff','#eb4b4b'];
+const MODES={n:{n:'Normalny',d:'najwyższa wartość dropów wygrywa'},u:{n:'Underdog',d:'najniższa wartość dropów wygrywa'},s:{n:'Shared',d:'pula dzielona równo między graczy'}};
 const bt={rounds:[],players:2,mode:'n',running:false};
-function renderBtSetup(){const q=($('#btSearch').value||'').trim().toLowerCase();const g=$('#btCases');g.innerHTML='';const fr=document.createDocumentFragment();const counts={};bt.rounds.forEach(id=>counts[id]=(counts[id]||0)+1);
-  CASES.filter(c=>c.name.toLowerCase().includes(q)).forEach(c=>{const b=el('button','bcase');b.type='button';b.appendChild(casePic(c));b.appendChild(el('b',null,c.name));b.appendChild(el('span',null,money(c.price)));if(counts[c.id])b.appendChild(el('span','cnt','×'+counts[c.id]));
-    b.addEventListener('click',()=>{if(bt.rounds.length>=10){toast('Maksymalnie 10 rund.','bad');return}bt.rounds.push(c.id);renderBtSetup()});fr.appendChild(b)});g.appendChild(fr);
+const roundCase=r=>r.j?jokerOf(CASE_BY[r.id]):CASE_BY[r.id];
+const btCostOf=()=>bt.rounds.reduce((a,r)=>a+roundCase(r).price,0);
+function renderBtSetup(){const q=($('#btSearch').value||'').trim().toLowerCase();const g=$('#btCases');g.innerHTML='';const fr=document.createDocumentFragment();const counts={};bt.rounds.forEach(r=>counts[r.id]=(counts[r.id]||0)+1);const jk=$('#btJokerAdd').checked;
+  CASES.filter(c=>c.name.toLowerCase().includes(q)).forEach(c=>{const b=el('button','bcase');b.type='button';b.appendChild(casePic(c));b.appendChild(el('b',null,c.name));b.appendChild(el('span',null,money(jk?jokerOf(c).price:c.price)+(jk?' · J':'')));if(counts[c.id])b.appendChild(el('span','cnt','×'+counts[c.id]));
+    b.addEventListener('click',()=>{if(bt.rounds.length>=10){toast('Maksymalnie 10 rund.','bad');return}bt.rounds.push({id:c.id,j:$('#btJokerAdd').checked});renderBtSetup()});fr.appendChild(b)});g.appendChild(fr);
   const r=$('#btRounds');r.innerHTML='';if(!bt.rounds.length){const e=el('em',null,'Kliknij skrzynkę, żeby dodać rundę.');e.style.cssText='color:var(--dim);font-size:13px;font-style:normal';r.appendChild(e)}
-  bt.rounds.forEach((id,i)=>{const c=CASE_BY[id],d=el('div','rnd');d.appendChild(casePic(c));d.appendChild(el('span',null,c.name.replace(' Case','')));const x=el('button',null,'×');x.type='button';x.setAttribute('aria-label','Usuń rundę');x.addEventListener('click',()=>{bt.rounds.splice(i,1);renderBtSetup()});d.appendChild(x);r.appendChild(d)});
-  const cost=bt.rounds.reduce((a,id)=>a+CASE_BY[id].price,0);$('#btRoundsN').textContent=bt.rounds.length+' / 10 rund';$('#btCost').textContent=money(cost);$('#btStart').disabled=!bt.rounds.length||cost>state.balance;
+  bt.rounds.forEach((rd,i)=>{const c=CASE_BY[rd.id],d=el('div','rnd');d.appendChild(casePic(c));d.appendChild(el('span',null,c.name.replace(' Case','')));const j=el('button','jk','J');j.type='button';j.title='Joker: równe szanse na każdy skin';j.setAttribute('aria-pressed',String(!!rd.j));j.addEventListener('click',()=>{rd.j=!rd.j;renderBtSetup()});d.appendChild(j);
+    const x=el('button',null,'×');x.type='button';x.setAttribute('aria-label','Usuń rundę');x.addEventListener('click',()=>{bt.rounds.splice(i,1);renderBtSetup()});d.appendChild(x);r.appendChild(d)});
+  const cost=btCostOf();$('#btRoundsN').textContent=bt.rounds.length+' / 10 rund';$('#btCost').textContent=money(cost);$('#btJokerN').textContent=bt.rounds.filter(r=>r.j).length;$('#btStart').disabled=!bt.rounds.length||cost>state.balance;
   $('#btStart').textContent=cost>state.balance&&bt.rounds.length?'Brakuje '+money(cost-state.balance):'Rozpocznij bitwę'}
-$('#btSearch').addEventListener('input',renderBtSetup);
+$('#btSearch').addEventListener('input',renderBtSetup);$('#btJokerAdd').addEventListener('change',renderBtSetup);
 $('#btPl').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;bt.players=+b.dataset.n;$('#btPl').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
 $('#btMode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;bt.mode=b.dataset.m;$('#btMode').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
 $('#btStart').addEventListener('click',()=>startBattle());$('#btAgain').addEventListener('click',()=>startBattle());
 $('#btBack').addEventListener('click',()=>{if(bt.running)return;$('#btArena').hidden=true;$('#btSetup').hidden=false;renderBtSetup()});
-async function startBattle(){if(bt.running||!bt.rounds.length)return;const cost=bt.rounds.reduce((a,id)=>a+CASE_BY[id].price,0);if(cost>state.balance){toast('Brakuje '+money(cost-state.balance)+'.','bad');return}
+function countdown(){return new Promise(res=>{const o=$('#cdown'),n=$('#cdNum');o.hidden=false;n.classList.remove('go');let k=5;n.textContent=k;beep(660,.12,'square',.04);const t=setInterval(()=>{k--;if(k>0){n.textContent=k;beep(660,.12,'square',.04)}else{clearInterval(t);n.textContent='START';n.classList.add('go');beep(1046,.3,'square',.06);setTimeout(()=>{o.hidden=true;res()},reduced()?100:700)}},reduced()?120:1000)})}
+async function startBattle(){if(bt.running||!bt.rounds.length)return;const cost=btCostOf();if(cost>state.balance){toast('Brakuje '+money(cost-state.balance)+'.','bad');return}
   if(state.inv.length+bt.rounds.length*bt.players>MAX_INV){toast('Ekwipunek jest pełny.','bad');return}ac();bt.running=true;state.balance=Math.round((state.balance-cost)*100)/100;renderBalance(true);state.stats.spent+=cost;state.stats.opened+=bt.rounds.length;state.stats.bp++;save();
-  $('#btSetup').hidden=true;$('#btArena').hidden=false;$('#btResult').hidden=true;window.scrollTo({top:0});
+  $('#btSetup').hidden=true;$('#btArena').hidden=false;$('#btResult').hidden=true;$('#btModeLbl').textContent=MODES[bt.mode].n;window.scrollTo({top:0});
   const names=['Ty'];const pool=BOTS.slice().sort(()=>Math.random()-.5);for(let i=1;i<bt.players;i++)names.push(pool[i]);
   const players=names.map((n,i)=>({n,items:[],total:0,col:i?BOTC[i%BOTC.length]:'#22c55e'}));
-  const arena=$('#arena');arena.style.setProperty('--np',bt.players);arena.innerHTML='';
+  const arena=$('#arena');arena.innerHTML='';
   players.forEach(p=>{const d=el('div','pl glass');d.style.setProperty('--ac',p.col);const h=el('div','pl-h');h.appendChild(el('div','ava',p.n[0].toUpperCase()));const t=el('div');t.appendChild(el('b',null,p.n));const tot=el('span','tot',money(0));t.appendChild(tot);h.appendChild(t);d.appendChild(h);
     const vr=el('div','vreel');vr.appendChild(el('div','vm'));vr.appendChild(el('div','vcol'));d.appendChild(vr);d.appendChild(el('div','drops'));arena.appendChild(d);p.el=d});
-  let pot=0;$('#btPot').textContent=money(0);
-  for(let r=0;r<bt.rounds.length;r++){const c=CASE_BY[bt.rounds[r]];$('#btRoundLbl').textContent='Runda '+(r+1)+' / '+bt.rounds.length;$('#btCaseLbl').textContent=c.name;
+  const first=roundCase(bt.rounds[0]);$('#btRoundLbl').textContent='Runda 1 / '+bt.rounds.length;$('#btCaseLbl').textContent=first.name;players.forEach(p=>{const col=p.el.querySelector('.vcol'),vr=p.el.querySelector('.vreel');buildTrack(col,first,null);placeStart(col,vr,true)});
+  let pot=0;$('#btPot').textContent=money(0);await countdown();
+  for(let r=0;r<bt.rounds.length;r++){const c=roundCase(bt.rounds[r]);$('#btRoundLbl').textContent='Runda '+(r+1)+' / '+bt.rounds.length+(c.joker?' · Joker':'');$('#btCaseLbl').textContent=c.name;
     const drops=players.map(()=>dropFrom(c));
     players.forEach((p,i)=>{const col=p.el.querySelector('.vcol'),vr=p.el.querySelector('.vreel');buildTrack(col,c,SK[drops[i].s]);placeStart(col,vr,true)});
     await new Promise(rs=>requestAnimationFrame(()=>requestAnimationFrame(rs)));
     await Promise.all(players.map((p,i)=>spinTrack(p.el.querySelector('.vcol'),p.el.querySelector('.vreel'),true,(reduced()?400:state.settings.fast?1200:3200)+i*250)));
     players.forEach((p,i)=>{const it=drops[i],s=SK[it.s],v=itemValue(it);p.items.push(it);p.total+=v;pot+=v;p.el.querySelector('.tot').textContent=money(p.total);const dp=skinPic(s);dp.style.setProperty('--rc',RAR[s.r].c);dp.title=fullName(it)+' · '+money(v);p.el.querySelector('.drops').appendChild(dp);if(s.r>=2)beep(s.r>=3?988:784,.2,'sine',.06)});
     $('#btPot').textContent=money(pot);await new Promise(rs=>setTimeout(rs,reduced()?100:state.settings.fast?350:800))}
-  const crazy=bt.mode==='c';const best=players.slice().sort((a,b)=>crazy?a.total-b.total:b.total-a.total);const top=best[0].total;const tied=players.filter(p=>Math.abs(p.total-top)<.005);const winner=tied.length>1?pick(tied):best[0];
-  players.forEach(p=>p.el.classList.add(p===winner?'winner':'loser'));const all=players.flatMap(p=>p.items);
-  if(winner.n==='Ty'){state.inv.push(...all);state.stats.bw++;all.forEach(it=>{const v=itemValue(it);if(!state.stats.best||v>state.stats.best.v)state.stats.best={s:it.s,f:it.f,st:it.st,v}});winSound(4);confetti('#fbbf24',160);$('#btResEye').textContent='Wygrana';$('#btResTitle').textContent='Zgarniasz całą pulę: '+money(pot);$('#btResText').textContent=all.length+' przedmiotów trafiło do Twojego ekwipunku.';const bi=all.slice().sort((a,b)=>itemValue(b)-itemValue(a))[0];pushTicker(SK[bi.s],'Ty · bitwa',true)}
-  else{loseSound();$('#btResEye').textContent='Przegrana';$('#btResTitle').textContent=winner.n+' wygrywa '+money(pot);$('#btResText').textContent='Twoje dropy o wartości '+money(players[0].total)+' przepadły. Następnym razem się uda.'}
-  addXp(cost*10);bt.running=false;save();renderInvCounts();$('#btResult').hidden=false;$('#btAgain').disabled=cost>state.balance;$('#btResult').scrollIntoView({behavior:'smooth',block:'nearest'})}
+  const all=players.flatMap(p=>p.items);const me=players[0];
+  if(bt.mode==='s'){const share=Math.round(pot/players.length*100)/100;players.forEach(p=>p.el.classList.add('winner'));changeBalance(share);cash();if(share>=cost)confetti('#22c55e',90);
+    $('#btResEye').textContent='Shared';$('#btResTitle').textContent='Twoja część puli: '+money(share);$('#btResText').textContent='Pula '+money(pot)+' podzielona równo na '+players.length+' graczy. Dropy zamieniono na gotówkę i dopisano do salda.'+(share>=cost?' Wyszedłeś na plus.':' Bitwa kosztowała '+money(cost)+'.');if(share>=cost)state.stats.bw++;const bi=all.slice().sort((a,b)=>itemValue(b)-itemValue(a))[0];pushTicker(SK[bi.s],'Ty · shared',true)}
+  else{const under=bt.mode==='u';const best=players.slice().sort((a,b)=>under?a.total-b.total:b.total-a.total);const top=best[0].total;const tied=players.filter(p=>Math.abs(p.total-top)<.005);const winner=tied.length>1?pick(tied):best[0];
+    players.forEach(p=>p.el.classList.add(p===winner?'winner':'loser'));
+    if(winner===me){state.inv.push(...all);state.stats.bw++;all.forEach(it=>{const v=itemValue(it);if(!state.stats.best||v>state.stats.best.v)state.stats.best={s:it.s,f:it.f,st:it.st,v}});winSound(4);confetti('#fbbf24',160);$('#btResEye').textContent=under?'Underdog wygrywa':'Wygrana';$('#btResTitle').textContent='Zgarniasz całą pulę: '+money(pot);$('#btResText').textContent=all.length+' przedmiotów trafiło do Twojego ekwipunku.'+(under?' Twoje dropy były najtańsze, więc cała reszta jest Twoja.':'');const bi=all.slice().sort((a,b)=>itemValue(b)-itemValue(a))[0];pushTicker(SK[bi.s],'Ty · bitwa',true)}
+    else{loseSound();$('#btResEye').textContent='Przegrana';$('#btResTitle').textContent=winner.n+' wygrywa '+money(pot);$('#btResText').textContent=(under?'W trybie Underdog wygrywa najniższa wartość. ':'')+'Twoje dropy o wartości '+money(me.total)+' przepadły.'}}
+  addXp(cost*10);bt.running=false;save();renderInvCounts();$('#btResult').hidden=false;$('#btAgain').disabled=btCostOf()>state.balance;$('#btResult').scrollIntoView({behavior:'smooth',block:'nearest'})}
 
 /* ---------- Coinflip ---------- */
 const cf={side:'ct',busy:false,turns:0};
